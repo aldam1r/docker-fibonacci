@@ -20,7 +20,9 @@ class Fib extends Component {
 
   async fetchIndexes() {
     const seenIndexes = await axios.get('/api/values/all');
-    this.setState({ seenIndexes: seenIndexes.data });
+    this.setState({
+      seenIndexes: seenIndexes.data
+    });
   }
   
   handleSubmit = async event => {
@@ -29,8 +31,8 @@ class Fib extends Component {
     await axios.post('/api/values', {
       index: this.state.index
     });
-		
-		this.setState({ index: '' });
+    
+    this.setState({ index: '' });
   };
   
   renderSeenIndexes() {
@@ -58,7 +60,7 @@ class Fib extends Component {
           <label>Enter your value:</label>
           <input 
             value={this.state.index}
-            onChange={event => this.setState({ index: event.target.value})}
+            onChange={event => this.setState({ index: event.target.value })}
           />
           <button>Submit</button>
         </form>
