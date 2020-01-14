@@ -1,0 +1,23 @@
+sudo: required
+services:
+  - docker
+  
+before_install:
+  - docker build -t aldam1r/fib-client-test -f ./client/Dockerfile.dev ./client
+  
+script:
+  - docker run -e CI=true aldam1r/fib-client-test npm test -- --coverage 
+
+after_succes:
+  - docker build -t aldam1r/fib-client ./client
+  - docker build -t aldam1r/fib-nginx ./nginx
+  - docker build -t aldam1r/fib-server ./server
+  - docker build -t aldam1r/fib-worker ./worker
+  # Log in to docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push aldam1r/fib-client 
+  - docker push aldam1r/fib-nginx 
+  - docker push aldam1r/fib-server 
+  - docker push aldam1r/fib-worker 
+  
+  
