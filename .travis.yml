@@ -15,9 +15,10 @@ after_succes:
   - docker build -t aldam1r/fib-worker ./worker
   # Log in to docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  - docker push aldam1r/fib-client 
+  - docker push aldam1r/fib-client:v1.01 
   - docker push aldam1r/fib-nginx 
   - docker push aldam1r/fib-server 
   - docker push aldam1r/fib-worker 
-  
+
+
   
