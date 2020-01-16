@@ -9,7 +9,7 @@ script:
   - docker run -e CI=true aldam1r/fib-client-test npm test -- --coverage 
 
 after_succes:
-  - docker build -t aldam1r/fib-client ./client
+  - docker build -t aldam1r/fib-client:v1.01 ./client
   - docker build -t aldam1r/fib-nginx ./nginx
   - docker build -t aldam1r/fib-server ./server
   - docker build -t aldam1r/fib-worker ./worker
