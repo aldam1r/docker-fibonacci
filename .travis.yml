@@ -1,24 +1,33 @@
 sudo: required
+
+# Configure Travis to use Docker.
 services:
   - docker
-  
-before_install:
+
+env:
+  - global:
+    - GIT_SHA=$(git rev-parse HEAD)
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+
+# Install Google Cloud SDK on Travis. (Use proper name for keyfile) 
+before_script:
+  - openssl <<< complete with travis encrypt-file response instruction >>>
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud config set project <google-cloud-project-id>
+  - gcloud config set compute/zone <google-cloud-cluster-location>
+  - gcloud container clusters get-credentials <google-cloud-cluster-name>
+#  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - echo "$DOCKER_TRAINING_TOKEN" | docker login -u "$DOCKER_ID" --password-stdin
   - docker build -t aldam1r/fib-client-test -f ./client/Dockerfile.dev ./client
   
 script:
-  - docker run -e CI=true aldam1r/fib-client-test npm test -- --coverage 
+  - docker run -e CI=true aldam1r/fib-client-test npm test -- --coverage
 
-after_succes:
-  - docker build -t aldam1r/fib-client:v1.01 ./client
-  - docker build -t aldam1r/fib-nginx ./nginx
-  - docker build -t aldam1r/fib-server ./server
-  - docker build -t aldam1r/fib-worker ./worker
-  # Log in to docker CLI
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  - docker push aldam1r/fib-client:v1.01 
-  - docker push aldam1r/fib-nginx 
-  - docker push aldam1r/fib-server 
-  - docker push aldam1r/fib-worker 
-
-
-  
+deploy:
+  provider: script
+  script: bash ./delivery/ci/deploy-google.sh
+  on:
+    branch: master

@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1aplha2
+kind: Certificate
+metadata:
+  name: docker-fibonacci-com-tls
+spec:
+  secretName: docker-fibonacci-com
+  issueRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: docker-fibonacci.com
+  dnsNames:
+    - docker-fibonacci.com
+    - www.docker-fibonacci.com
+  acme:
+    config:
+      - http01:
+          ingressClass: nginx
+        domains:
+          - docker-fibonacci.com
+          - www.docker-fibonacci.com
+        
